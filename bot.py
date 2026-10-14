@@ -6,7 +6,7 @@ from aiogram.filters import BaseFilter
 from aiohttp import web
 
 TOKEN = "8609045969:AAG-z1oyZJgSVGkLv0gROmvGOAR79WiXseg"
-GROUP_ID = -5144682306
+GROUP_ID = -1003732661005
 TARGET_BOT_USERNAME = "sanitaclinicfrombot"
 
 # Вставте сюди посилання на ваш Google Web App, яке ви щойно скопіювали:
