@@ -1,6 +1,6 @@
 import asyncio
-import json
 import os
+import aiohttp
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import BaseFilter
 from aiohttp import web
@@ -8,7 +8,9 @@ from aiohttp import web
 TOKEN = "8609045969:AAE9iBwu5tDNJEtuFY6_5Bn36ExnevaE-kQ"
 GROUP_ID = -5144682306
 TARGET_BOT_USERNAME = "sanitaclinicfrombot"
-DATA_FILE = "leads.json"
+
+# Вставте сюди посилання на ваш Google Web App, яке ви щойно скопіювали:
+GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyH7o0iq-qvNgr16EuSKoozLBZ2X3GRoHkTD_peJzLehqT8zFddbN0bNEgqxejuhdCK/exec"
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -44,26 +46,23 @@ async def save_lead_handler(message: types.Message):
         return
 
     parsed_data = parse_lead_text(lead_text)
+
     lead_entry = {
         "date": str(message.date),
         "form_name": parsed_data["form_name"],
         "name": parsed_data["name"],
         "phone": parsed_data["phone"],
-        "email": parsed_data["email"],
-        "raw_message": lead_text
+        "email": parsed_data["email"]
     }
 
-    data = []
-    if os.path.exists(DATA_FILE):
+    # Надсилаємо дані в Google Таблицю через POST-запит
+    if GOOGLE_SCRIPT_URL and "macros/s" in GOOGLE_SCRIPT_URL:
         try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except json.JSONDecodeError:
-            data = []
-
-    data.append(lead_entry)
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+            async with aiohttp.ClientSession() as session:
+                async with session.post(GOOGLE_SCRIPT_URL, json=lead_entry) as resp:
+                    print(f"Дані надіслано в Google Таблицю, статус: {resp.status}")
+        except Exception as e:
+            print(f"Помилка надсилання в таблицю: {e}")
 
 # Заглушка вебсервера для безкоштовного тарифу Render
 async def handle(request):
@@ -79,7 +78,6 @@ async def web_server():
     await site.start()
 
 async def main():
-    # Запускаємо вебсервер і телеграм-бота паралельно
     await web_server()
     print("Бот-слухач та вебсервер запущені...")
     await dp.start_polling(bot)
