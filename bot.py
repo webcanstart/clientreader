@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import BaseFilter
 from aiohttp import web
 
-TOKEN = "8609045969:AAE9iBwu5tDNJEtuFY6_5Bn36ExnevaE-kQ"
+TOKEN = "8609045969:AAG-z1oyZJgSVGkLv0gROmvGOAR79WiXseg"
 GROUP_ID = -5144682306
 TARGET_BOT_USERNAME = "sanitaclinicfrombot"
 
